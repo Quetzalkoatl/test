@@ -26,6 +26,14 @@ let content = [
 	},
 ];
 
+// const deepPick = (fields, object, value) => {
+// 	const items = fields.join('.');
+// 	const [first, ...remaining] = items.split('.');
+// 	return remaining.length
+// 		? deepPick(remaining.join('.'), object[first])
+// 		: console.log(object[first]);
+// };
+
 const App = () => {
 	const [state, setState] = useState(content);
 	const [path, setPath] = useState('');
@@ -33,14 +41,30 @@ const App = () => {
 
 	const applyValue = (path, value) => {
 		const copy = [...state];
-		copy.push({
-			type: 'label',
-			props: {
-				caption: value,
-				visible: true,
-			},
-		});
-		setState(copy);
+		if (!path && value) {
+			copy.push(JSON.parse(value));
+			content.push(JSON.parse(value));
+			setState(copy);
+		} else {
+			const [first, ...remaining] = path.split('.');
+			const currentIndex = first.replace(/[^\d]/g, '');
+			const [one, ...two] = remaining;
+			if (two.length) {
+				if (two.join('') === 'width' || two.join('') === 'height') {
+					copy[+currentIndex][one][two] = +value;
+					content = [...copy];
+					setState(copy);
+				} else if (two.join('') === 'visible') {
+					copy[+currentIndex][one][two] = JSON.parse(value);
+					content = [...copy];
+					setState(copy);
+				} else {
+					copy[+currentIndex][one][two] = value;
+					content = [...copy];
+					setState(copy);
+				}
+			}
+		}
 	};
 
 	return (
