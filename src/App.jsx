@@ -26,14 +26,6 @@ let content = [
 	},
 ];
 
-// const deepPick = (fields, object, value) => {
-// 	const items = fields.join('.');
-// 	const [first, ...remaining] = items.split('.');
-// 	return remaining.length
-// 		? deepPick(remaining.join('.'), object[first])
-// 		: console.log(object[first]);
-// };
-
 const App = () => {
 	const [state, setState] = useState(content);
 	const [path, setPath] = useState('');
