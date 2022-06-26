@@ -5,30 +5,29 @@ const Main = () => {
 	const dispatch = useDispatch();
 	const elements = useSelector(state => state);
 
-	let path = '';
-	let value = '';
+	const handleSubmit = event => {
+		event.preventDefault();
+		dispatch(applyValue(event.target.path.value, event.target.newValue.value));
+		event.target.reset();
+	};
 
 	return (
 		<div className='App'>
-			<input
-				className='inputSource'
-				placeholder='Путь'
-				// value={path}
-				onChange={e => {
-					path = e.target.value;
-				}}
-			/>
-			<input
-				className='inputSource'
-				placeholder='Новое значение'
-				// value={value}
-				onChange={e => {
-					value = e.target.value;
-				}}
-			/>
-			<button className='btn' onClick={() => dispatch(applyValue(path, value))}>
-				Применить
-			</button>
+			<form onSubmit={handleSubmit}>
+				<input
+					className='inputSource'
+					type='text'
+					name='path'
+					placeholder='Путь'
+				/>
+				<input
+					className='inputSource'
+					type='text'
+					name='newValue'
+					placeholder='Новое значение'
+				/>
+				<input className='btn' type='submit' value='Применить' />
+			</form>
 			<div className='content'>
 				{elements.map(elem => {
 					if (elem.type === 'panel') {

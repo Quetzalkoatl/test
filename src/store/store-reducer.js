@@ -3,7 +3,9 @@ import {content} from './content';
 export const changeContent = (state = content, action) => {
 	switch (action.type) {
 		case 'APPLY_VALUE': {
-			if (!action.path && action.value) {
+			if (!action.path && !action.value) {
+				return state;
+			} else if (!action.path && action.value) {
 				return [...state, JSON.parse(action.value)];
 			} else {
 				const [first, ...remaining] = action.path.split('.');
@@ -52,18 +54,20 @@ export const changeContent = (state = content, action) => {
 							  }
 							: elem
 					);
+				} else if (two.join('') === 'caption') {
+					return state.map((elem, index) =>
+						index === +currentIndex
+							? {
+									...elem,
+									props: {
+										caption: action.value,
+										visible: state[index].props.visible,
+									},
+							  }
+							: elem
+					);
 				}
-				return state.map((elem, index) =>
-					index === +currentIndex
-						? {
-								...elem,
-								props: {
-									caption: action.value,
-									visible: state[index].props.visible,
-								},
-						  }
-						: elem
-				);
+				return state;
 			}
 		}
 		default: {
