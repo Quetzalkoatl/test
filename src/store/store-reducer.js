@@ -10,9 +10,22 @@ export const changeContent = (state = content, action) => {
 			} else {
 				const [first, ...remaining] = action.path.split('.');
 				const currentIndex = first.replace(/[^\d]/g, '');
-				const [one, ...two] = remaining;
+				const remainingString = remaining.join('.');
+				const currentState = state[currentIndex];
 
-				if (two.join('') === 'width') {
+				// Функция глубокого обхода объекта
+				const deepPick = (fields, object) => {
+					const [first, ...remaining] = fields.split('.');
+
+					return remaining.length
+						? deepPick(remaining.join('.'), object[first])
+						: object[first];
+				};
+
+				if (
+					typeof deepPick(remainingString, currentState) === 'number' &&
+					remainingString.split('.').slice(-1).join() === 'width'
+				) {
 					return state.map((elem, index) =>
 						index === +currentIndex
 							? {
@@ -26,7 +39,10 @@ export const changeContent = (state = content, action) => {
 							  }
 							: elem
 					);
-				} else if (two.join('') === 'height') {
+				} else if (
+					typeof deepPick(remainingString, currentState) === 'number' &&
+					remainingString.split('.').slice(-1).join() === 'height'
+				) {
 					return state.map((elem, index) =>
 						index === +currentIndex
 							? {
@@ -40,7 +56,9 @@ export const changeContent = (state = content, action) => {
 							  }
 							: elem
 					);
-				} else if (two.join('') === 'visible') {
+				} else if (
+					typeof deepPick(remainingString, currentState) === 'boolean'
+				) {
 					return state.map((elem, index) =>
 						index === +currentIndex
 							? {
@@ -54,7 +72,9 @@ export const changeContent = (state = content, action) => {
 							  }
 							: elem
 					);
-				} else if (two.join('') === 'caption') {
+				} else if (
+					typeof deepPick(remainingString, currentState) === 'string'
+				) {
 					return state.map((elem, index) =>
 						index === +currentIndex
 							? {
